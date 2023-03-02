@@ -114,7 +114,6 @@ func (c *Client) readPump() {
 
 			// Save TX in cache
 			rdb.Set(ctx, tx.TxHash, tx.Peer, 0)
-			log.Println("tx:", msg.Payload)
 
 			// Add peer with default score
 			rdb.ZAdd(ctx, "peers", redis.Z{
