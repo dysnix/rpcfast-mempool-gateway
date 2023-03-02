@@ -5,7 +5,7 @@ FROM golang:1.19 AS builder
 WORKDIR /app
 
 # Copy the go.mod and go.sum files
-COPY go.mod go.sum ./
+COPY go.mod ./
 
 # Download the dependencies
 RUN go mod download
