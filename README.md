@@ -3,6 +3,6 @@
 ## TODO
 * [x] Listen redis pub/sub
 * [x] Save and order peers by score (based on first tx receive)
-* [x] Get peers ordered by score
+* [x] API for get peers ordered by score
 * [x] WS: add ws server
 * [ ] JsonRPC: implement eth_sendRawTransaction with broadcast to top-10 peers by score

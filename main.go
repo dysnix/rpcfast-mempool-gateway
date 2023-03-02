@@ -13,7 +13,11 @@ import (
 	"net/http"
 )
 
-var addr = flag.String("addr", ":8080", "http service address")
+var addr = flag.String("addr", ":8000", "http service address")
+
+var RedisUrl = flag.String("redis-url", "redis-master:6379", "redis address:port")
+var RedisDB = flag.Int("redis-db", 2, "redis DB")
+var RedisChannel = flag.String("redis-channel", "transaction", "redis channel")
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
@@ -36,9 +40,9 @@ func servePeers(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "redis-master:6379",
-		Password: "", // no password set
-		DB:       2,  // use default DB
+		Addr:     *RedisUrl,
+		Password: "",       // no password set
+		DB:       *RedisDB, // use default DB
 		PoolSize: 100,
 	})
 

@@ -62,14 +62,14 @@ func (c *Client) readPump() {
 
 	ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "redis-master:6379",
-		Password: "", // no password set
-		DB:       2,  // use default DB
+		Addr:     *RedisUrl,
+		Password: "",       // no password set
+		DB:       *RedisDB, // use default DB
 		PoolSize: 100,
 	})
 
 	// There is no error because go-redis automatically reconnects on error.
-	pubsub := rdb.Subscribe(ctx, "transaction")
+	pubsub := rdb.Subscribe(ctx, *RedisChannel)
 
 	// Close the subscription when we are done.
 	defer pubsub.Close()
@@ -85,11 +85,7 @@ func (c *Client) readPump() {
 			case <-ticker.C:
 				diff := txCounter - prevTxCounter
 				prevTxCounter = txCounter
-
-				topPeers := rdb.ZRange(ctx, "peers", 0, 9)
-				log.Println(topPeers)
-
-				log.Printf("TXs processed: %d; TPS: %d", txCounter, diff)
+				log.Printf("TXs processed: %d [%d tx / sec]", txCounter, diff)
 			case <-quit:
 				ticker.Stop()
 				return
