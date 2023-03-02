@@ -17,16 +17,16 @@ COPY . .
 RUN go build -o rpcfast-mempool-gateway
 
 # Second stage: Create a minimal image using a scratch base image
-FROM scratch
+FROM alpine:latest
 
 # Set the working directory inside the container
 WORKDIR /app
 
 # Copy the binary from the builder stage
-COPY --from=builder /app/rpcfast-mempool-gateway .
+COPY --from=builder /app/rpcfast-mempool-gateway /app
 
 # Expose the port that the app listens on
 EXPOSE 8080
 
 # Start the app
-CMD ["./rpcfast-mempool-gateway"]
+CMD ["/app/rpcfast-mempool-gateway"]
