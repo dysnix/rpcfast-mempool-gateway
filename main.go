@@ -47,7 +47,7 @@ func servePeers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	json.NewEncoder(w).Encode(data)
+	json.NewEncoder(w).Encode(data.Val())
 }
 
 func main() {
