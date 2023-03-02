@@ -42,7 +42,12 @@ func servePeers(w http.ResponseWriter, r *http.Request) {
 		PoolSize: 100,
 	})
 
-	data := rdb.ZRangeWithScores(ctx, "peers", 0, 10)
+	data := rdb.ZRangeArgsWithScores(ctx, redis.ZRangeArgs{
+		Key:   "peers",
+		Start: 0,
+		Stop:  100,
+		Rev:   true,
+	})
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
