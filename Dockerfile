@@ -1,5 +1,5 @@
 # First stage: Build the app using Golang base image
-FROM golang:1.19 AS builder
+FROM golang:1.19-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
