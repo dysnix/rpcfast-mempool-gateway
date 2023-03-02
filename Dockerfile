@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the binary
-RUN go build -o rpcfast-mempool-gateway
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o rpcfast-mempool-gateway
 
 # Second stage: Create a minimal image using a scratch base image
 FROM alpine:latest
