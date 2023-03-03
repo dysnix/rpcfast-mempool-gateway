@@ -97,14 +97,16 @@ func (c *Client) readPump() {
 			// Broadcast tx to clients
 			c.hub.broadcast <- []byte(msg.Payload)
 
-			// Save TX in cache
-			rdb.Set(ctx, tx.TxHash, tx.Peer, 0)
+			go func() {
+				// Save TX in cache
+				rdb.Set(ctx, tx.TxHash, tx.Peer, 0)
 
-			// Add peer with default score
-			rdb.ZAdd(ctx, "peers", redis.Z{
-				Score:  float64(1),
-				Member: tx.Peer,
-			})
+				// Add peer with default score
+				rdb.ZAdd(ctx, "peers", redis.Z{
+					Score:  float64(1),
+					Member: tx.Peer,
+				})
+			}()
 			continue
 		case err != nil:
 			log.Println("Get failed", err)
