@@ -6,25 +6,26 @@ type AccessListItem struct {
 }
 
 type Transaction struct {
+	Type                 string           `json:"type"`
 	ChainId              string           `json:"chainId"`
 	Nonce                string           `json:"nonce"`
+	GasPrice             string           `json:"gasPrice"`
 	MaxPriorityFeePerGas string           `json:"maxPriorityFeePerGas"`
 	MaxFeePerGas         string           `json:"maxFeePerGas"`
-	GasLimit             string           `json:"gasLimit"`
+	Gas                  string           `json:"gas"`
 	To                   string           `json:"to"`
 	Value                string           `json:"value"`
-	Data                 string           `json:"data"`
+	Input                string           `json:"input"`
 	AccessList           []AccessListItem `json:"accessList"`
 	V                    string           `json:"v"`
 	R                    string           `json:"r"`
 	S                    string           `json:"s"`
-	From                 string           `json:"from"`
-	TxHash               string           `json:"txhash"`
+	TxHash               string           `json:"hash"`
 	Peer                 string           `json:"peer"`
+	//From                 string           `json:"from"`
 }
 
-type PeerInfo struct {
-	Ip    string `redis:"ip"`
-	Port  int    `redis:"port"`
-	Score int    `redis:"score"`
+type newTx struct {
+	Peer        string      `json:"peer"`
+	Transaction Transaction `json:"tx"`
 }

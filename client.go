@@ -48,8 +48,8 @@ func (c *Client) readPump() {
 	ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     *RedisUrl,
-		Password: "",       // no password set
-		DB:       *RedisDB, // use default DB
+		Password: *RedisPassword,
+		DB:       *RedisDB,
 		PoolSize: 100,
 	})
 
@@ -84,14 +84,14 @@ func (c *Client) readPump() {
 	}()
 
 	for msg := range ch {
-		tx := Transaction{}
+		tx := newTx{}
 		err := json.Unmarshal([]byte(msg.Payload), &tx)
 		if err != nil {
 			log.Println("read:", err)
 			return
 		}
 
-		enode, err := rdb.Get(ctx, tx.TxHash).Result()
+		enode, err := rdb.Get(ctx, tx.Transaction.TxHash).Result()
 		switch {
 		case err == redis.Nil || enode == "":
 			// Broadcast tx to clients
@@ -99,7 +99,7 @@ func (c *Client) readPump() {
 
 			go func() {
 				// Save TX in cache
-				rdb.Set(ctx, tx.TxHash, tx.Peer, 0)
+				rdb.Set(ctx, tx.Transaction.TxHash, tx.Peer, 0)
 
 				// Add peer with default score
 				rdb.ZAdd(ctx, "peers", redis.Z{
@@ -156,7 +156,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 1024)}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in

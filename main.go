@@ -15,22 +15,10 @@ import (
 
 var addr = flag.String("addr", ":8000", "http service address")
 
-var RedisUrl = flag.String("redis-url", "redis-master:6379", "redis address:port")
-var RedisDB = flag.Int("redis-db", 2, "redis DB")
-var RedisChannel = flag.String("redis-channel", "transaction", "redis channel")
-
-func serveHome(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
-	if r.URL.Path != "/" {
-		http.Error(w, "Not found", http.StatusNotFound)
-		return
-	}
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	http.ServeFile(w, r, "home.html")
-}
+var RedisUrl = flag.String("redis-url", "95.217.34.222:6379", "redis address:port")
+var RedisPassword = flag.String("redis-password", "afuogh3shi", "redis password")
+var RedisDB = flag.Int("redis-db", 0, "redis DB")
+var RedisChannel = flag.String("redis-channel", "polygon-mainnet-txs", "redis channel")
 
 func servePeers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -41,8 +29,8 @@ func servePeers(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     *RedisUrl,
-		Password: "",       // no password set
-		DB:       *RedisDB, // use default DB
+		Password: *RedisPassword,
+		DB:       *RedisDB,
 		PoolSize: 100,
 	})
 
@@ -63,9 +51,8 @@ func main() {
 	flag.Parse()
 	hub := newHub()
 	go hub.run()
-	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/api/peers", servePeers)
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})
 	err := http.ListenAndServe(*addr, nil)
